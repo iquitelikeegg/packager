@@ -1,0 +1,23 @@
+{
+    "delete" : {
+        "file" : [
+            "composer.json", "composer.lock", ".env", ".env.live", ".gitignore", ".gitattributes"
+        ],
+        "dir" : [
+            ".git", "resources/.sass-cache", "resources/assets/sass", "public/share"
+        ]
+    },
+    "move" : {
+        "target" : [
+
+        ],
+        "destination" : [
+
+        ]
+    },
+    "create" : {
+        "dir" : [
+            "public/share"
+        ]
+    }
+}
