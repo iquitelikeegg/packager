@@ -40,14 +40,6 @@ try:
 except IndexError:
     errors.append('\033[1;33mpackager.py\033[0m expects two arguments.')
 
-# try:
-#     packageFiles = json.loads(open('packager.json', 'r').read())
-# except IOError:
-#     errors.append('\033[1;33mpackager.json\033[0m not found')
-# except ValueError:
-#     errors.append('\033[1;33mpackager.json\033[0m formatted incorrectly')
-
-
 if len(errors):
     print "\033[1;31mERRORS!"
 
