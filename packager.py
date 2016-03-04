@@ -5,7 +5,7 @@
 
 # pylint: disable-msg=C0103
 
-import json, os, sys, shutil
+import json, os, sys, shutil, traceback
 
 print "\033[1;32m"
 print "#########################################################################"
@@ -27,6 +27,9 @@ try:
 
     print "reading \033[1;33mpackager.json\033[0m...\n"
 
+    """
+        packager.json should be in the source dir.
+    """
     try:
         packageFiles = json.loads(open(os.path.join(sys.argv[1], 'packager.json'), 'r').read())
     except IOError:
@@ -52,7 +55,7 @@ if len(errors):
         print value
     print "\033[0m"
 
-    print """Usage instructions: \npython \033[1;33mpackager.py\033[0m \033[1;34m[string target] [string destination]\033[0m\n"""
+    print """Usage instructions: \npython \033[1;33mpackager.py\033[0m \033[1;34m[string source] [string destination]\033[0m\n"""
 
     exit()
 
@@ -84,24 +87,33 @@ print "\033[1;32msuccess\033[0m\n"
 
 print "\033[1;32mapplying actions\033[0m\n"
 
-for item in packageFiles['delete']['dir']:
-    shutil.rmtree(os.path.join(dest, item))
-for item in packageFiles['delete']['file']:
-    os.remove(os.path.join(dest, item))
+try:
+    for item in packageFiles['delete']['dir']:
+        shutil.rmtree(os.path.join(dest, item))
+    for item in packageFiles['delete']['file']:
+        os.remove(os.path.join(dest, item))
 
-for index in range(0, len(packageFiles['move']['target'])):
-    if os.path.exists(os.path.join(dest, packageFiles['move']['destination'][index])):
-        if os.path.isdir(os.path.join(dest, packageFiles['move']['destination'][index])):
-            shutil.rmtree(os.path.join(dest, packageFiles['move']['destination'][index]))
-        else:
-            os.remove(os.path.join(dest, packageFiles['move']['destination'][index]))
+    for index in range(0, len(packageFiles['move']['target'])):
+        if os.path.exists(os.path.join(dest, packageFiles['move']['destination'][index])):
+            if os.path.isdir(os.path.join(dest, packageFiles['move']['destination'][index])):
+                shutil.rmtree(os.path.join(dest, packageFiles['move']['destination'][index]))
+            else:
+                os.remove(os.path.join(dest, packageFiles['move']['destination'][index]))
 
-    shutil.move(
-        os.path.join(dest, packageFiles['move']['target'][index]),
-        os.path.join(dest, packageFiles['move']['destination'][index])
-    )
+        shutil.move(
+            os.path.join(dest, packageFiles['move']['target'][index]),
+            os.path.join(dest, packageFiles['move']['destination'][index])
+        )
 
-for item in packageFiles['create']['dir']:
-    os.mkdir(os.path.join(dest, item))
+    for item in packageFiles['create']['dir']:
+        os.mkdir(os.path.join(dest, item))
+
+except OSError:
+    print "\033[1;31mSomething's gone wrong!"
+
+    traceback.print_exc()
+
+    print "cleaning up \033[0m"
+    shutil.rmtree(dest)
 
 print "\033[1;32mDone!\033[0m\n"
