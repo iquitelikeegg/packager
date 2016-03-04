@@ -18,15 +18,6 @@ print "\033[0m"
 
 errors = []
 
-print "reading \033[1;33mpackager.json\033[0m...\n"
-
-try:
-    packageFiles = json.loads(open('packager.json', 'r').read())
-except IOError:
-    errors.append('\033[1;33mpackager.json\033[0m not found')
-except ValueError:
-    errors.append('\033[1;33mpackager.json\033[0m formatted incorrectly')
-
 try:
     if not isinstance(sys.argv[1], basestring) or not os.path.isdir(sys.argv[1]):
         errors.append('the first argument must be a string directory name')
@@ -34,8 +25,25 @@ try:
     if not isinstance(sys.argv[2], basestring):
         errors.append('the second argument must be a string destination name')
 
+    print "reading \033[1;33mpackager.json\033[0m...\n"
+
+    try:
+        packageFiles = json.loads(open(os.path.join(sys.argv[1], 'packager.json'), 'r').read())
+    except IOError:
+        errors.append('\033[1;33mpackager.json\033[0m not found')
+    except ValueError:
+        errors.append('\033[1;33mpackager.json\033[0m formatted incorrectly')
+
 except IndexError:
     errors.append('\033[1;33mpackager.py\033[0m expects two arguments.')
+
+# try:
+#     packageFiles = json.loads(open('packager.json', 'r').read())
+# except IOError:
+#     errors.append('\033[1;33mpackager.json\033[0m not found')
+# except ValueError:
+#     errors.append('\033[1;33mpackager.json\033[0m formatted incorrectly')
+
 
 if len(errors):
     print "\033[1;31mERRORS!"
@@ -44,8 +52,7 @@ if len(errors):
         print value
     print "\033[0m"
 
-    print """Usage instructions: \npython \033[1;33mpackager.py\033[0m
-          \033[1;34m[string target] [string destination]\033[0m\n"""
+    print """Usage instructions: \npython \033[1;33mpackager.py\033[0m \033[1;34m[string target] [string destination]\033[0m\n"""
 
     exit()
 
